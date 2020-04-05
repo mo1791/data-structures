@@ -3,94 +3,81 @@
 
 #include <initializer_list>
 #include <iterator>
+#include <ostream>
 
 namespace ds {
- 
-	template <typename> class doubly;
-	template <typename> class iterator;
-	template <typename> class reverse_iterator;
- 
-	/* NODE CLASS */
-	template<typename T>
-	class node {
-		friend class doubly<T>;
-		friend class iterator<T>;
-		friend class reverse_iterator<T>;
-	public:
-		explicit node(const T);
-	private:
-		T _data;
-		node<T>* _next;
-		node<T>* _prev;
-	};
- 
-	/* ITERATOR CLASS */
-	template <typename T>
-	class iterator {
-	public:
-		using value_type = T;
-		using reference = T&;
-		using pointer = node<T>*;
-		using iterator_category = std::forward_iterator_tag;
- 
-	public:
-		explicit iterator(node<T>*);
-		iterator<T>& operator++();
-		value_type operator*();
-		bool operator!=(iterator<T> const&) const;
-		bool operator==(iterator<T> const&) const;
-	private:
-		pointer _iterator;
-	};
- 
-	/* CONST_ITERATOR */
-	template<typename T>
-	class const_iterator final: public iterator<T> {
-	public:
-		explicit const_iterator(node<T>*);
- 
-		using iterator<T>::operator++;
-		using iterator<T>::operator*;
-		using iterator<T>::operator!=;
-		using iterator<T>::operator==;
-	};
- 
-	/* REVERSE_ITERATOR */
-	template<typename T>
-	class reverse_iterator {
-	public:
-		using value_type = T;
-		using reference = T&;
-		using pointer = node<T>*;
-		using iterator_category = std::forward_iterator_tag;
- 
-	public:
-		explicit reverse_iterator(node<T>*);
-		reverse_iterator<T>& operator++();
-		value_type operator*();
-		bool operator!=(reverse_iterator<T> const&) const;
-		bool operator==(reverse_iterator<T> const&) const;
-	private:
-		pointer _iterator;
-	};
- 
-	/* CONST_REVERSE_ITERATOR CLASS */
-	template <typename T>
-	class const_reverse_iterator final: public reverse_iterator<T> {
-	public:
-		explicit const_reverse_iterator(node<T>*);
- 
-		using reverse_iterator<T>::operator++;
-		using reverse_iterator<T>::operator*;
-		using reverse_iterator<T>::operator!=;
-		using reverse_iterator<T>::operator==;
-	};
- 
+
 	/* DOUBLY CLASS*/
 	template<typename T>
 	class doubly final {
+
+	private:
+		/* NODE CLASS */
+		class node;
+		node* _head;
+		node* _tail;
+
 	public:
-		explicit doubly();
+		/* ITERATOR CLASS */
+		class iterator {
+		public:
+			using value_type = T;
+			using reference = T&;
+			using pointer = node*;
+			using iterator_category = std::forward_iterator_tag;
+		
+		public:
+			explicit iterator(node*);
+			iterator& operator++();
+			reference operator*();
+			bool operator!=(iterator const&) const;
+			bool operator==(iterator const&) const;
+		private:
+			pointer _iterator;
+		};
+		
+		/* CONST_ITERATOR */
+		class const_iterator final: public iterator {
+		public:
+			explicit const_iterator(node*);
+		
+			using iterator::operator++;
+			using iterator::operator*;
+			using iterator::operator!=;
+			using iterator::operator==;
+		};
+		
+		/* REVERSE_ITERATOR */
+		class reverse_iterator {
+		public:
+			using value_type = T;
+			using reference = T&;
+			using pointer = node*;
+			using iterator_category = std::forward_iterator_tag;
+		
+		public:
+			explicit reverse_iterator(node*);
+			reverse_iterator& operator++();
+			reference operator*();
+			bool operator!=(reverse_iterator const&) const;
+			bool operator==(reverse_iterator const&) const;
+		private:
+			pointer _iterator;
+		};
+		
+		/* CONST_REVERSE_ITERATOR CLASS */
+		class const_reverse_iterator final: public reverse_iterator {
+		public:
+			explicit const_reverse_iterator(node*);
+		
+			using reverse_iterator::operator++;
+			using reverse_iterator::operator*;
+			using reverse_iterator::operator!=;
+			using reverse_iterator::operator==;
+		};
+
+	public:
+		doubly();
  
 		doubly(std::initializer_list<T>);
  
@@ -118,29 +105,29 @@ namespace ds {
  
 		void pop_after(const T);
  
-		iterator<T> begin();
+		iterator begin();
  
-		const_iterator<T> begin() const;
+		const_iterator begin() const;
  
-		const_iterator<T> cbegin() const;
+		const_iterator cbegin() const;
  
-		reverse_iterator<T> rbegin();
+		reverse_iterator rbegin();
  
-		const_reverse_iterator<T> rbegin() const;
+		const_reverse_iterator rbegin() const;
  
-		const_reverse_iterator<T> crbegin() const;
+		const_reverse_iterator crbegin() const;
  
-		iterator<T> end();
+		iterator end();
  
-		const_iterator<T> end() const;
+		const_iterator end() const;
  
-		const_iterator<T> cend() const;
+		const_iterator cend() const;
  
-		reverse_iterator<T> rend();
+		reverse_iterator rend();
  
-		const_reverse_iterator<T> rend() const;
+		const_reverse_iterator rend() const;
  
-		const_reverse_iterator<T> crend() const;
+		const_reverse_iterator crend() const;
  
 		~doubly();
  
@@ -149,9 +136,14 @@ namespace ds {
 			swap(lhs._head, rhs._head);
 			swap(lhs._tail, rhs._tail);
 		}
- 
-	private:
-		node<T>* _head;
-		node<T>* _tail;
 	};
+}
+
+	template<typename T>
+std::ostream& operator<<(std::ostream& stream, ds::doubly<T> const& list) {
+	std::for_each(
+		std::begin(list), std::end(list),
+		[&stream] (const T value) { stream << value << ' '; }
+		);
+	return stream << '\n';
 }

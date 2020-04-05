@@ -1,47 +1,54 @@
 #include <algorithm>
 #include <functional>
 #include <cassert>
-#include <ostream>
 #include <string>
 #include <exception>
 #include "singly.hpp"
 
+
 // start node
-template<typename T>
-ds::node<T>::node(const T value)
-: _data(value), _next(nullptr) {}
+template <typename T>
+class ds::singly<T>::node {
+	friend class singly<T>;
+	friend class iterator;
+public:
+	explicit node(const T value): _data(value), _next(nullptr) {}
+private:
+	T _data;
+	node* _next;
+};
 
 // end node
 
 // start iterators
 template<typename T>
-ds::iterator<T>::iterator(ds::node<T>* ptr)
+ds::singly<T>::iterator::iterator(ds::singly<T>::node* ptr)
 : _iterator(ptr) {}
 
 template<typename T>
-ds::iterator<T>& ds::iterator<T>::operator++() {
+typename ds::singly<T>::iterator& ds::singly<T>::iterator::operator++() {
 	_iterator = _iterator->_next;
 	return *this;
 }
 
 template<typename T>
-T ds::iterator<T>::operator*() {
+T& ds::singly<T>::iterator::operator*() {
 	return _iterator->_data;
 }
 
 template<typename T>
-bool ds::iterator<T>::operator!=(ds::iterator<T> const& rhs) const {
+bool ds::singly<T>::iterator::operator!=(ds::singly<T>::iterator const& rhs) const {
 	return _iterator != rhs._iterator;
 }
 
 template<typename T>
-bool ds::iterator<T>::operator==(ds::iterator<T> const& rhs) const {
+bool ds::singly<T>::iterator::operator==(ds::singly<T>::iterator const& rhs) const {
 	return !(*this != rhs);
 }
 
 template<typename T>
-ds::const_iterator<T>::const_iterator(ds::node<T>* ptr)
-: ds::iterator<T>(ptr) {}
+ds::singly<T>::const_iterator::const_iterator(ds::singly<T>::node* ptr)
+: ds::singly<T>::iterator(ptr) {}
 
 // end iterators
 
@@ -92,7 +99,7 @@ bool ds::singly<T>::empty() const { return _head == nullptr; }
 template<typename T>
 void ds::singly<T>::push_front(const T value) try {
 	
-	node<T>* _node = new node<T>(value);
+	node* _node = new node(value);
 
 	if ( empty() ) {
 		_head = _tail = _node;
@@ -109,7 +116,7 @@ void ds::singly<T>::push_front(const T value) try {
 template<typename T>
 void ds::singly<T>::push_back(const T value) try {
 	
-	node<T>* _node = new node<T>(value);
+	node* _node = new node(value);
 
 	if ( empty() ) {
 		_head = _tail = _node;
@@ -129,7 +136,7 @@ void ds::singly<T>::push_after(const T key, const T value) {
 
 	assert( !empty() );
 
-	node<T>* trace = _head;
+	node* trace = _head;
 
 	while(trace->next) {
 		if (trace->data == key)
@@ -141,7 +148,7 @@ void ds::singly<T>::push_after(const T key, const T value) {
 		return; // node not founded
 
 	try {
-		node<T>* _node = new node<T>(value);
+		node* _node = new node(value);
 
 		_node->_next = trace->_next;
 		trace->_next = _node;
@@ -161,9 +168,9 @@ void ds::singly<T>::push_before(const T key, const T value) {
 
 	assert( !empty() );
 
-	node<T>* curr = _head;
+	node* curr = _head;
 
-	for(node<T>* next=_head->_next; next;) {
+	for(node* next=_head->_next; next;) {
 
 		if (next->_data == key)
 			break;
@@ -179,7 +186,7 @@ void ds::singly<T>::push_before(const T key, const T value) {
 
 	try {
 
-		node<T>* _node = new node<T>(value);
+		node* _node = new node(value);
 
 		curr->_next = (( _node->_next = curr->_next ), _node);
 
@@ -195,7 +202,7 @@ void ds::singly<T>::pop_front() {
 
 	assert( !empty() );
 
-	node<T>* curr = _head;
+	node* curr = _head;
 	_head = _head->_next;
 	curr =  ( free(curr), nullptr );
 }
@@ -205,7 +212,7 @@ void ds::singly<T>::pop_back() {
 
 	assert( !empty() );
 
-	node<T>* curr = _head;
+	node* curr = _head;
 
 	while (curr->_next != _tail)
 		curr = curr->_next;
@@ -223,10 +230,10 @@ void ds::singly<T>::pop_before(const T key) {
 
 	assert( !empty() );
 
-	node<T>* prev = nullptr;
-	node<T>* curr = _head;
+	node* prev = nullptr;
+	node* curr = _head;
 
-	for( node<T>* next = _head->_next; next;) {
+	for( node* next = _head->_next; next;) {
 
 		if (next->_data == key)
 			break;
@@ -246,8 +253,8 @@ void ds::singly<T>::pop_after(const T key) {
 
 	assert( !empty() );
 
-	node<T>* curr = _head;
-	node<T>* next = _head->_next;
+	node* curr = _head;
+	node* next = _head->_next;
 
 	while ( next ) {
 
@@ -266,23 +273,22 @@ void ds::singly<T>::pop_after(const T key) {
 
 
 template<typename T>
-ds::iterator<T> ds::singly<T>::begin() { return iterator<T>(_head); }
+typename ds::singly<T>::iterator ds::singly<T>::begin() { return iterator(_head); }
 
 template<typename T>
-ds::const_iterator<T> ds::singly<T>::begin() const { return const_iterator<T>(_head); }
+typename ds::singly<T>::const_iterator ds::singly<T>::begin() const { return const_iterator(_head); }
 
 template<typename T>		
-ds::const_iterator<T> ds::singly<T>::cbegin() const { return const_iterator<T>(_head); }		
+typename ds::singly<T>::const_iterator ds::singly<T>::cbegin() const { return const_iterator(_head); }		
 
 template<typename T>
-ds::iterator<T> ds::singly<T>::end() { return iterator<T>(nullptr); }
+typename ds::singly<T>::iterator ds::singly<T>::end() { return iterator(nullptr); }
 
 template<typename T>
-ds::const_iterator<T> ds::singly<T>::end() const { return const_iterator<T>(nullptr); }
+typename ds::singly<T>::const_iterator ds::singly<T>::end() const { return const_iterator(nullptr); }
 
 template<typename T>
-ds::const_iterator<T> ds::singly<T>::cend() const { return const_iterator<T>(nullptr); }
-
+typename ds::singly<T>::const_iterator ds::singly<T>::cend() const { return const_iterator(nullptr); }
 
 template<typename T>
 ds::singly<T>::~singly() {
@@ -291,29 +297,25 @@ ds::singly<T>::~singly() {
 		pop_front();
 }
 
-template<typename T>
-std::ostream& operator<<(std::ostream& stream, ds::singly<T> const& list) {
-	std::for_each(
-		std::begin(list), std::end(list),
-		[&stream] (const T value) { stream << value << ' '; }
-		);
-	return stream << '\n';
-}
 
 // end singly
 
-template class ds::singly<char>;
-template class ds::singly<short>;
-template class ds::singly<int>;
-template class ds::singly<unsigned char>;
-template class ds::singly<unsigned short>;
-template class ds::singly<unsigned int>;
-template class ds::singly<float>;
-template class ds::singly<double>;
-template class ds::singly<long>;
-template class ds::singly<long float>;
-template class ds::singly<long double>;
-template class ds::singly<long long>;
-template class ds::singly<long long float>;
-template class ds::singly<long long double>;
-template class ds::singly<std::string>;
+template<typename T>
+	using singly = ds::singly<T>;
+
+template class singly<char>;
+template class singly<short>;
+template class singly<int>;
+template class singly<unsigned char>;
+template class singly<unsigned short>;
+template class singly<unsigned int>;
+template class singly<float>;
+template class singly<double>;
+template class singly<long>;
+template class singly<long float>;
+template class singly<long double>;
+template class singly<long long>;
+template class singly<long long float>;
+template class singly<long long double>;
+template class singly<std::string>;
+

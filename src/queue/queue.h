@@ -6,17 +6,8 @@
 namespace ds {
 	template<typename T>
 	class queue final {
-	private:
-		class node {
-			friend class queue<T>;
-		public:
-			explicit node(const T);
-		private:
-			T _data;
-			node* _next;
-		};
 	public:
-		explicit queue();
+		queue();
 
 		queue(queue<T> const&);
 		
@@ -36,11 +27,7 @@ namespace ds {
 
 		void pop();
 		
-		void print() const {
-			for(node* it=_head; it; it=it->_next)
-				std::cout << it->_data << ' ';
-			std::cout << '\n';
-		}
+		void print() const;
 		
 		~queue();
 
@@ -51,6 +38,7 @@ namespace ds {
 		}
 
 	private:
+		class node;
 		node* _head, *_tail;
 	};
 }

@@ -3,12 +3,20 @@
 #include <cassert>
 #include <iostream>
 #include <string>
+#include <exception>
 #include "stack.hpp"
 
 // start node
-template<typename T>
-ds::stack<T>::node::node(const T value)
-: _data(value), _next(nullptr) {}
+template <typename T>
+class ds::stack<T>::node {
+	friend class stack<T>;
+public:
+	explicit node(const T value)
+		: _data(value), _next(nullptr) {};
+private:
+	T _data;
+	node* _next;
+};
 
 // end node
 
@@ -92,6 +100,14 @@ std::optional<T> ds::stack<T>::peep() const {
 	return std::nullopt;
 }
 
+
+template<typename T>
+void ds::stack<T>::print() const {
+	for(node* it=_head; it; it=it->_next)
+		std::cout << it->_data << ' ';
+	std::cout << '\n';
+}
+
 template<typename T>
 ds::stack<T>::~stack() {
 
@@ -101,18 +117,22 @@ ds::stack<T>::~stack() {
 
 // end stack
 
-template class ds::stack<char>;
-template class ds::stack<short>;
-template class ds::stack<int>;
-template class ds::stack<unsigned char>;
-template class ds::stack<unsigned short>;
-template class ds::stack<unsigned int>;
-template class ds::stack<float>;
-template class ds::stack<double>;
-template class ds::stack<long>;
-template class ds::stack<long float>;
-template class ds::stack<long double>;
-template class ds::stack<long long>;
-template class ds::stack<long long float>;
-template class ds::stack<long long double>;
-template class ds::stack<std::string>;
+
+template<typename T>
+	using stack = ds::stack<T>;
+
+template class stack<char>;
+template class stack<short>;
+template class stack<int>;
+template class stack<unsigned char>;
+template class stack<unsigned short>;
+template class stack<unsigned int>;
+template class stack<float>;
+template class stack<double>;
+template class stack<long>;
+template class stack<long float>;
+template class stack<long double>;
+template class stack<long long>;
+template class stack<long long float>;
+template class stack<long long double>;
+template class stack<std::string>;

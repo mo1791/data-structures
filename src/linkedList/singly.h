@@ -2,62 +2,49 @@
 
 #include <initializer_list>
 #include <iterator>
+#include <iostream>
 
 namespace ds {
-
-	template <typename> class singly;
-	template <typename> class iterator;
-
-
-	/* NODE CLASS */
-	template <typename T>
-	class node {
-		friend class singly<T>;
-		friend class iterator<T>;
-	public:
-		explicit node(const T);
-	private:
-		T _data;
-		node<T>* _next;
-	};
-
-	/* ITERATOR CLASS */
-	template <typename T>
-	class iterator {
-	public:
-		using value_type = T;
-		using reference = T&;
-		using pointer = node<T>*;
-		using iterator_category = std::forward_iterator_tag;
-		
-	public:
-		explicit iterator(node<T>*);
-		iterator<T>& operator++();
-		value_type operator*();
-		bool operator!=(iterator<T> const&) const;
-		bool operator==(iterator<T> const&) const;
-	private:
-		pointer _iterator;
-	};
-
-	/* CONST_ITERATOR CLASS */
-	template<typename T>
-	class const_iterator final: public iterator<T> {
-	public:
-		explicit const_iterator(node<T>*);
-
-		using iterator<T>::operator++;
-		using iterator<T>::operator*;
-		using iterator<T>::operator!=;
-		using iterator<T>::operator==;
-	};
-
-
 	/* SINGLY CLASS */
 	template<typename T>
 	class singly final {
+
+	private:
+		class node;
+		node* _head;
+		node* _tail;
+		
 	public:
-		explicit singly();
+		/* ITERATOR CLASS */
+		class iterator {
+		public:
+			using value_type = T;
+			using reference = T&;
+			using pointer = node*;
+			using iterator_category = std::forward_iterator_tag;
+			
+		public:
+			explicit iterator(node*);
+			iterator& operator++();
+			reference operator*();
+			bool operator!=(iterator const&) const;
+			bool operator==(iterator const&) const;
+		private:
+			pointer _iterator;
+		};
+
+		/* CONST_ITERATOR CLASS */
+		class const_iterator final: public iterator {
+		public:
+			explicit const_iterator(node*);
+
+			using iterator::operator++;
+			using iterator::operator*;
+			using iterator::operator!=;
+			using iterator::operator==;
+		};
+	public:
+		singly();
 		
 		singly(std::initializer_list<T>);
 		
@@ -85,17 +72,17 @@ namespace ds {
 
 		void pop_after(const T);
 
-		iterator<T> begin();
+		iterator begin();
 
-		const_iterator<T> begin() const;
+		const_iterator begin() const;
 		
-		const_iterator<T> cbegin() const;
+		const_iterator cbegin() const;
 		
-		iterator<T> end();
+		iterator end();
 		
-		const_iterator<T> end() const;
+		const_iterator end() const;
 		
-		const_iterator<T> cend() const;
+		const_iterator cend() const;
 		
 		~singly();
 
@@ -104,9 +91,14 @@ namespace ds {
 			swap(lhs._head, rhs._head);
 			swap(lhs._tail, rhs._tail);
 		}
-
-	private:
-		node<T>* _head;
-		node<T>* _tail;
 	};
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& stream, ds::singly<T> const& list) {
+	std::for_each(
+		std::begin(list), std::end(list),
+		[&stream] (const T value) { stream << value << ' '; }
+		);
+	return stream << '\n';
 }

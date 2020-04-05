@@ -4,19 +4,11 @@
 
 
 namespace ds {
+	
 	template<typename T>
 	class stack final {
-	private:
-		class node {
-			friend class stack<T>;
-		public:
-			explicit node(const T);
-		private:
-			T m_data;
-			node* m_next;
-		};
 	public:
-		explicit stack();
+		stack();
 
 		stack(stack<T> const&);
 		
@@ -35,15 +27,18 @@ namespace ds {
 		void pop();
 
 		std::optional<T> peep() const;
-		
+
+		void print() const;
+				
 		~stack();
 
 		friend void swap(stack<T>& lhs, stack<T>& rhs) {
 			using std::swap;
-			swap(lhs.m_head, rhs.m_head);
+			swap(lhs._head, rhs._head);
 		}
 
 	private:
-		node* m_head;
+		class node;
+		node* _head;
 	};
 }
