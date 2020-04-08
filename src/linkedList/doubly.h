@@ -1,9 +1,8 @@
 #pragma once
 
-
+#include <algorithm>
 #include <initializer_list>
 #include <iterator>
-#include <ostream>
 
 namespace ds {
 
@@ -19,63 +18,68 @@ namespace ds {
 
 	public:
 		/* ITERATOR CLASS */
-		class iterator {
+		class _iterator {
 		public:
-			using value_type = T;
-			using reference = T&;
-			using pointer = node*;
-			using iterator_category = std::forward_iterator_tag;
+			using iterator_category = std::bidirectional_iterator_tag;
 		
 		public:
-			explicit iterator(node*);
-			iterator& operator++();
-			reference operator*();
-			bool operator!=(iterator const&) const;
-			bool operator==(iterator const&) const;
+			explicit _iterator(node*);
+			_iterator& operator++();
+			T& operator*();
+			bool operator!=(_iterator const&) const;
+			bool operator==(_iterator const&) const;
 		private:
-			pointer _iterator;
+			node* __iterator;
 		};
 		
 		/* CONST_ITERATOR */
-		class const_iterator final: public iterator {
+		class _const_iterator final: public _iterator {
 		public:
-			explicit const_iterator(node*);
+			explicit _const_iterator(node*);
 		
-			using iterator::operator++;
-			using iterator::operator*;
-			using iterator::operator!=;
-			using iterator::operator==;
+			using _iterator::operator++;
+			using _iterator::operator*;
+			using _iterator::operator!=;
+			using _iterator::operator==;
 		};
 		
 		/* REVERSE_ITERATOR */
-		class reverse_iterator {
+		class _reverse_iterator {
 		public:
-			using value_type = T;
-			using reference = T&;
-			using pointer = node*;
-			using iterator_category = std::forward_iterator_tag;
+			using iterator_category = std::bidirectional_iterator_tag;
 		
 		public:
-			explicit reverse_iterator(node*);
-			reverse_iterator& operator++();
-			reference operator*();
-			bool operator!=(reverse_iterator const&) const;
-			bool operator==(reverse_iterator const&) const;
+			explicit _reverse_iterator(node*);
+			_reverse_iterator& operator++();
+			T& operator*();
+			bool operator!=(_reverse_iterator const&) const;
+			bool operator==(_reverse_iterator const&) const;
 		private:
-			pointer _iterator;
+			node* __iterator;
 		};
 		
 		/* CONST_REVERSE_ITERATOR CLASS */
-		class const_reverse_iterator final: public reverse_iterator {
+		class _const_reverse_iterator final: public _reverse_iterator {
 		public:
-			explicit const_reverse_iterator(node*);
+			explicit _const_reverse_iterator(node*);
 		
-			using reverse_iterator::operator++;
-			using reverse_iterator::operator*;
-			using reverse_iterator::operator!=;
-			using reverse_iterator::operator==;
+			using _reverse_iterator::operator++;
+			using _reverse_iterator::operator*;
+			using _reverse_iterator::operator!=;
+			using _reverse_iterator::operator==;
 		};
-
+	public:
+		using value_type              = T;
+		using reference               = typename std::add_lvalue_reference<T>::type;
+		using pointer                 = typename std::add_pointer<T>::type;
+		using const_reference         = const reference;
+		using const_pointer           = const pointer;
+		using size_type               = std::size_t;
+		using difference_type         = std::ptrdiff_t;
+		using iterator                = _iterator;
+		using const_iterator          = _const_iterator;
+		using reverse_iterator        = _reverse_iterator;
+		using const_reverse_iterator  = _const_reverse_iterator;
 	public:
 		doubly();
  
@@ -86,6 +90,8 @@ namespace ds {
 		doubly(doubly<T>&&);
  
 		doubly<T>& operator=(doubly<T>);
+
+		doubly<T>& operator=(std::initializer_list<T>);
  
 		bool empty() const;
  

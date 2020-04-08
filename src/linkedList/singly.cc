@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <functional>
 #include <cassert>
 #include <string>
@@ -27,18 +26,18 @@ ds::singly<T>::iterator::iterator(ds::singly<T>::node* ptr)
 
 template<typename T>
 typename ds::singly<T>::iterator& ds::singly<T>::iterator::operator++() {
-	_iterator = _iterator->_next;
+	__iterator = __iterator->_next;
 	return *this;
 }
 
 template<typename T>
-T& ds::singly<T>::iterator::operator*() {
-	return _iterator->_data;
+typename ds::singly<T>::reference ds::singly<T>::iterator::operator*() {
+	return __iterator->_data;
 }
 
 template<typename T>
 bool ds::singly<T>::iterator::operator!=(ds::singly<T>::iterator const& rhs) const {
-	return _iterator != rhs._iterator;
+	return __iterator != rhs.__iterator;
 }
 
 template<typename T>
@@ -76,7 +75,7 @@ ds::singly<T>::singly(ds::singly<T> const& outer)
 
 	std::for_each(
 		std::begin(outer), std::end(outer),
-		std::bind(&singly::push_back, this, std::placeholders::_1)
+		std::bind(&singly::push_front, this, std::placeholders::_1)
 		);
 }
 
@@ -89,6 +88,16 @@ ds::singly<T>::singly(ds::singly<T>&& outer)
 template<typename T>
 ds::singly<T>& ds::singly<T>::operator=(ds::singly<T> rhs) {
 	swap(*this, rhs);
+	return *this;
+}
+
+template<typename T>
+ds::singly<T>& ds::singly<T>::operator=(std::initializer_list<T> list) {
+	this->~singly();
+	std::for_each(
+		std::begin(list), std::end(list),
+		std::bind(&singly::push_front, this, std::placeholders::_1)
+	);
 	return *this;
 }
 

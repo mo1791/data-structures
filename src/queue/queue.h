@@ -1,11 +1,21 @@
 #pragma once
 
-#include <iostream>
+#include <algorithm>
 #include <optional>
 
 namespace ds {
 	template<typename T>
 	class queue final {
+	public:
+		using value_type      = T;
+		using reference       = typename std::add_lvalue_reference<T>::type;
+		using pointer         = typename std::add_pointer<T>::type;
+		using const_reference = const reference;
+		using const_pointer   = const pointer;
+		using size_type       = std::size_t;
+		using difference_type = std::ptrdiff_t;
+
+
 	public:
 		queue();
 
