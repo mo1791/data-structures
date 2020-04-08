@@ -11,7 +11,8 @@ class ds::singly<T>::node {
 	friend class singly<T>;
 	friend class iterator;
 public:
-	explicit node(const T value): _data(value), _next(nullptr) {}
+	explicit node(const T value, node* next = nullptr)
+		: _data(value), _next(next) {}
 private:
 	T _data;
 	node* _next;
@@ -21,33 +22,33 @@ private:
 
 // start iterators
 template<typename T>
-ds::singly<T>::iterator::iterator(ds::singly<T>::node* ptr)
-: _iterator(ptr) {}
+ds::singly<T>::_iterator::_iterator(ds::singly<T>::node* ptr)
+: __iterator(ptr) {}
 
 template<typename T>
-typename ds::singly<T>::iterator& ds::singly<T>::iterator::operator++() {
+typename ds::singly<T>::_iterator& ds::singly<T>::_iterator::operator++() {
 	__iterator = __iterator->_next;
 	return *this;
 }
 
 template<typename T>
-typename ds::singly<T>::reference ds::singly<T>::iterator::operator*() {
+T& ds::singly<T>::_iterator::operator*() {
 	return __iterator->_data;
 }
 
 template<typename T>
-bool ds::singly<T>::iterator::operator!=(ds::singly<T>::iterator const& rhs) const {
+bool ds::singly<T>::_iterator::operator!=(ds::singly<T>::_iterator const& rhs) const {
 	return __iterator != rhs.__iterator;
 }
 
 template<typename T>
-bool ds::singly<T>::iterator::operator==(ds::singly<T>::iterator const& rhs) const {
+bool ds::singly<T>::_iterator::operator==(ds::singly<T>::_iterator const& rhs) const {
 	return !(*this != rhs);
 }
 
 template<typename T>
-ds::singly<T>::const_iterator::const_iterator(ds::singly<T>::node* ptr)
-: ds::singly<T>::iterator(ptr) {}
+ds::singly<T>::_const_iterator::_const_iterator(ds::singly<T>::node* ptr)
+: _iterator(ptr) {}
 
 // end iterators
 
@@ -60,7 +61,7 @@ ds::singly<T>::singly()
 
 template<typename T>
 ds::singly<T>::singly(std::initializer_list<T> list)
-: ds::singly<T>() {
+: singly<T>() {
 	std::for_each(
 		std::begin(list), 
 		std::end(list),
@@ -71,7 +72,7 @@ ds::singly<T>::singly(std::initializer_list<T> list)
 
 template<typename T>
 ds::singly<T>::singly(ds::singly<T> const& outer)
-: ds::singly<T>() {
+: singly<T>() {
 
 	std::for_each(
 		std::begin(outer), std::end(outer),
@@ -81,7 +82,7 @@ ds::singly<T>::singly(ds::singly<T> const& outer)
 
 template<typename T>
 ds::singly<T>::singly(ds::singly<T>&& outer)
-: ds::singly<T>() {
+: singly<T>() {
 	swap(*this, outer);
 }
 
@@ -108,14 +109,13 @@ bool ds::singly<T>::empty() const { return _head == nullptr; }
 template<typename T>
 void ds::singly<T>::push_front(const T value) try {
 	
-	node* _node = new node(value);
+	node* _node = new node(value, _head);
 
 	if ( empty() ) {
-		_head = _tail = _node;
-		return;
+		_head = _tail = _node; return;
 	}
 
-	_head = ( (_node->_next = _head), _node);
+	_head = _node;
 	
 } catch(std::bad_alloc const&) {
 
@@ -128,8 +128,7 @@ void ds::singly<T>::push_back(const T value) try {
 	node* _node = new node(value);
 
 	if ( empty() ) {
-		_head = _tail = _node;
-		return;
+		_head = _tail = _node; return;
 	}
 
 	_tail->_next = _node;
@@ -157,9 +156,9 @@ void ds::singly<T>::push_after(const T key, const T value) {
 		return; // node not founded
 
 	try {
-		node* _node = new node(value);
 
-		_node->_next = trace->_next;
+		node* _node = new node(value, trace->_next);
+
 		trace->_next = _node;
 
 		if (trace == _tail)
@@ -195,9 +194,9 @@ void ds::singly<T>::push_before(const T key, const T value) {
 
 	try {
 
-		node* _node = new node(value);
+		node* _node = new node(value, curr->_next);
 
-		curr->_next = (( _node->_next = curr->_next ), _node);
+		curr->_next =  _node;
 
 	} catch(std::bad_alloc const&) {
 

@@ -11,8 +11,8 @@ template <typename T>
 class ds::stack<T>::node {
 	friend class stack<T>;
 public:
-	explicit node(const T value)
-		: _data(value), _next(nullptr) {};
+	explicit node(const T value, node* next = nullptr)
+		: _data(value), _next(next) {};
 private:
 	T _data;
 	node* _next;
@@ -28,13 +28,19 @@ ds::stack<T>::stack()
 template<typename T>
 ds::stack<T>::stack(ds::stack<T> const& outer) try: stack<T>() { 
 	
-	_head = new node(outer._head->_data);
-	node* tracer = _head, *next = outer._head->_next;
+	node* curr = outer._head, *tracer = nullptr;
 
-	while (next) {
+	_head = new node(curr->_data);
+
+	curr = curr->_next;
+
+	tracer = _head;
+
+	while ( curr ) {
+
 		tracer->_next = new node(next->_data);
 		tracer = tracer->_next;
-		next = next->_next;
+		curr = curr->_next;
 	}
 } catch(std::bad_alloc const&) {
 
@@ -59,14 +65,14 @@ bool ds::stack<T>::empty() const {  return _head == nullptr; }
 template<typename T>
 void ds::stack<T>::push_front(const T value) try {
 	
-	node* _node = new node(value);
+	node* _node = new node(value, _head);
 
-	if (empty()) {
-		_head = _node;
-		return;
+	if ( empty() ) {
+		
+		_head = _node; return;
 	}
 
-	_head = ( (_node->_next = _head), _node);
+	_head =  _node;
 	
 } catch(std::bad_alloc const&) {
 

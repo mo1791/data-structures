@@ -27,13 +27,17 @@ ds::queue<T>::queue()
 template<typename T>
 ds::queue<T>::queue(ds::queue<T> const& outer) try: queue<T>() { 
 	
-	_head = _tail =  new node(outer._head->_data);
+	node* _node = outer._head;
+
+	_head = _tail =  new node(_node->_data);
 	
-	for(
-		node* next = outer._head->_next; 
-		next; next=next->_next)
-	{
-		push(next->_data);
+	_node = _node->_next;
+
+	while ( _node ) {
+
+		push( _node->_data );
+
+		_node = _node->_next;
 	}
 
 } catch(std::bad_alloc const&) {
