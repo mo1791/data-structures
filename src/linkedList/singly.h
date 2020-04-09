@@ -4,6 +4,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <iostream>
+#include <optional>
 
 namespace ds {
 	/* SINGLY CLASS */
@@ -11,6 +12,7 @@ namespace ds {
 	class singly final {
 	private:
 		class node;
+		std::size_t _size;
 		node* _head;
 		node* _tail;
 	public:
@@ -80,6 +82,14 @@ namespace ds {
 
 		void pop_after(const T);
 
+		std::optional<const_reference> front() const;
+
+		std::optional<const_reference> back() const;
+
+		size_type size() const;
+		
+		const_iterator data() const;
+
 		iterator begin();
 
 		const_iterator begin() const;
@@ -96,6 +106,7 @@ namespace ds {
 
 		friend void swap(singly<T>& lhs, singly<T>& rhs) {
 			using std::swap;
+			swap(lhs._size, rhs._size);
 			swap(lhs._head, rhs._head);
 			swap(lhs._tail, rhs._tail);
 		}

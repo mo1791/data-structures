@@ -14,8 +14,11 @@ class ds::doubly<T>::node {
 	friend class _iterator;
 	friend class _reverse_iterator;
 public:
-	explicit node(const T value, node* next=nullptr, node* prev=nullptr)
-		: _data(value), _next(next), _prev(prev) {}
+	explicit node(
+			const T value, 
+			node* next=nullptr, 
+			node* prev=nullptr
+		) : _data(value), _next(next), _prev(prev) {}
 private:
 	T _data;
 	node* _next;
@@ -29,10 +32,11 @@ ds::doubly<T>::_iterator::_iterator(ds::doubly<T>::node* ptr)
 : __iterator(ptr) {}
  
 	template<typename T>
-typename ds::doubly<T>::_iterator& ds::doubly<T>::_iterator::operator++() {
-	__iterator = __iterator->_next;
-	return *this;
-}
+typename ds::doubly<T>::_iterator& 
+	ds::doubly<T>::_iterator::operator++() {
+		__iterator = __iterator->_next;
+		return *this;
+	}
  
 	template<typename T>
 T& ds::doubly<T>::_iterator::operator*() {
@@ -40,12 +44,14 @@ T& ds::doubly<T>::_iterator::operator*() {
 }
  
 	template<typename T>
-bool ds::doubly<T>::_iterator::operator!=(ds::doubly<T>::_iterator const& rhs) const {
+bool ds::doubly<T>::_iterator::operator!=(
+									ds::doubly<T>::_iterator const& rhs) const {
 	return __iterator != rhs.__iterator;
 }
  
 	template<typename T>
-bool ds::doubly<T>::_iterator::operator==(ds::doubly<T>::_iterator const& rhs) const {
+bool ds::doubly<T>::_iterator::operator==(
+									ds::doubly<T>::_iterator const& rhs) const {
 	return !(*this != rhs);
 }
  
@@ -60,10 +66,11 @@ ds::doubly<T>::_reverse_iterator::_reverse_iterator(ds::doubly<T>::node* ptr)
 : __iterator(ptr) {}
  
 	template<typename T>
-typename ds::doubly<T>::_reverse_iterator& ds::doubly<T>::_reverse_iterator::operator++() {
-	__iterator = __iterator->_prev;
-	return *this;
-}
+typename ds::doubly<T>::_reverse_iterator& 
+	ds::doubly<T>::_reverse_iterator::operator++() {
+		__iterator = __iterator->_prev;
+		return *this;
+	}
  
 	template<typename T>
 T& ds::doubly<T>::_reverse_iterator::operator*() {
@@ -71,12 +78,14 @@ T& ds::doubly<T>::_reverse_iterator::operator*() {
 }
  
 	template<typename T>
-bool ds::doubly<T>::_reverse_iterator::operator!=(ds::doubly<T>::_reverse_iterator const& rhs) const {
+bool ds::doubly<T>::_reverse_iterator::operator!=(
+											ds::doubly<T>::_reverse_iterator const& rhs) const {
 	return __iterator != rhs.__iterator;
 }
  
 	template<typename T>
-bool ds::doubly<T>::_reverse_iterator::operator==(ds::doubly<T>::_reverse_iterator const& rhs) const {
+bool ds::doubly<T>::_reverse_iterator::operator==(
+											ds::doubly<T>::_reverse_iterator const& rhs) const {
 	return !(*this != rhs);
 }
  
@@ -89,7 +98,7 @@ ds::doubly<T>::_const_reverse_iterator::_const_reverse_iterator(ds::doubly<T>::n
 	// start doubly
 	template<typename T>
 ds::doubly<T>::doubly()
-: _head(nullptr), _tail(nullptr) {} 
+: _size(0), _head(nullptr), _tail(nullptr) {} 
  
  
 	template<typename T>
@@ -99,7 +108,7 @@ ds::doubly<T>::doubly(std::initializer_list<T> list)
 		std::begin(list), 
 		std::end(list),
 		std::bind(&doubly::push_back, this, std::placeholders::_1)
-		);
+	);
 }
  
  
@@ -110,7 +119,7 @@ ds::doubly<T>::doubly(ds::doubly<T> const& outer)
 	std::for_each(
 		std::begin(outer), std::end(outer),
 		std::bind(&doubly::push_front, this, std::placeholders::_1)
-		);
+	);
 }
  
 	template<typename T>
@@ -124,7 +133,8 @@ ds::doubly<T>& ds::doubly<T>::operator=(ds::doubly<T> rhs) {
 	swap(*this, rhs);
 	return *this;
 }
-template<typename T>
+
+	template<typename T>
 ds::doubly<T>& ds::doubly<T>::operator=(std::initializer_list<T> rhs) {
 	this->~doubly();
 	std::for_each(
@@ -136,7 +146,23 @@ ds::doubly<T>& ds::doubly<T>::operator=(std::initializer_list<T> rhs) {
  
 	template<typename T>
 bool ds::doubly<T>::empty() const { return _head == nullptr; }
- 
+
+	template<typename T>
+typename ds::doubly<T>::size_type 
+	ds::doubly<T>::size() const { return _size; }
+
+	template<typename T>
+std::optional<const T&> 
+	ds::doubly<T>::front() const { return !empty() ? _head->_data : std::nullopt; }
+
+	template<typename T>
+std::optional<const T&> 
+	ds::doubly<T>::back() const {  return !empty() ? _tail->_data : std::nullopt; }
+
+	template<typename T>
+typename ds::doubly<T>::const_iterator
+	ds::doubly<T>::data() const { return begin(); }
+
  
 	template<typename T>
 void ds::doubly<T>::push_front(const T value) try {
@@ -144,13 +170,17 @@ void ds::doubly<T>::push_front(const T value) try {
 	node* _node = new node(value, _head);
  
 	if ( empty() ) {
+
 		_head = _tail = _node;
+		
+		_size = _size + 1;
 		return;
 	}
 
 	_head->_prev = _node;
 	_head = _node;
-	return;
+	
+	_size = _size + 1;
  
 } catch (std::bad_alloc const&) { 
  
@@ -163,13 +193,17 @@ void ds::doubly<T>::push_back(const T value) try {
 	node* _node = new node(value, nullptr, _tail);
  
 	if ( empty() ) {
+
 		_head = _tail = _node;
+		
+		_size = _size + 1;
 		return;
 	}
 
 	_tail->_next = _node;
 	_tail = _node;
-	return;
+	
+	_size = _size + 1;
  
 } catch (std::bad_alloc const&) {
  
@@ -202,6 +236,8 @@ void ds::doubly<T>::push_after(const T key, const T value) {
 
 		curr->_next->_prev = _node;
 		curr->_next = _node;
+
+		_size = _size + 1;
  
 	} catch(std::bad_alloc const&) {
  
@@ -237,6 +273,8 @@ void ds::doubly<T>::push_before(const T key, const T value) {
 		
 		curr->_prev->_next = _node;
 		curr->_prev = _node;
+
+		_size = _size + 1;
  
 	} catch(std::bad_alloc const&) {
  
@@ -256,6 +294,8 @@ void ds::doubly<T>::pop_front() {
 	if ( _head )
 		_head->_prev = nullptr;
 	curr = ( free(curr), nullptr);
+
+	_size = _size - 1;
 }
  
 	template<typename T>
@@ -267,6 +307,8 @@ void ds::doubly<T>::pop_back() {
 	_tail = _tail->_prev;
 	_tail->_next = nullptr;
 	curr = ( free(curr), nullptr );
+
+	_size = _size - 1;
 }
  
  
@@ -295,6 +337,8 @@ void ds::doubly<T>::pop_before(const T key) {
 	curr->_next->_prev = curr->_prev;
  
 	curr = ( free(curr), nullptr );
+
+	_size = _size - 1;
 }
  
  
@@ -326,44 +370,58 @@ void ds::doubly<T>::pop_after(const T key) {
 	next->_next->_prev = curr;
  
 	next = ( free(next), nullptr );
+
+	_size = _size - 1;
 }
  
  
 	template<typename T>
-typename ds::doubly<T>::iterator ds::doubly<T>::begin() { return iterator(_head); }
+typename ds::doubly<T>::iterator 
+	ds::doubly<T>::begin() { return iterator(_head); }
  
 	template<typename T>
-typename ds::doubly<T>::const_iterator ds::doubly<T>::begin() const { return const_iterator(_head); }
+typename ds::doubly<T>::const_iterator 
+	ds::doubly<T>::begin() const { return const_iterator(_head); }
  
 	template<typename T>		
-typename ds::doubly<T>::const_iterator ds::doubly<T>::cbegin() const { return const_iterator(_head); }
+typename ds::doubly<T>::const_iterator 
+	ds::doubly<T>::cbegin() const { return const_iterator(_head); }
  
 	template<typename T>
-typename ds::doubly<T>::reverse_iterator ds::doubly<T>::rbegin() { return reverse_iterator(_tail); }
+typename ds::doubly<T>::reverse_iterator
+	ds::doubly<T>::rbegin() { return reverse_iterator(_tail); }
  
 	template<typename T>
-typename ds::doubly<T>::const_reverse_iterator ds::doubly<T>::rbegin() const { return const_reverse_iterator(_tail); }
+typename ds::doubly<T>::const_reverse_iterator
+	ds::doubly<T>::rbegin() const { return const_reverse_iterator(_tail); }
  
 	template<typename T>		
-typename ds::doubly<T>::const_reverse_iterator ds::doubly<T>::crbegin() const { return const_reverse_iterator(_tail); }		
+typename ds::doubly<T>::const_reverse_iterator
+	ds::doubly<T>::crbegin() const { return const_reverse_iterator(_tail); }		
  
 	template<typename T>
-typename ds::doubly<T>::iterator ds::doubly<T>::end() { return iterator(nullptr); }
+typename ds::doubly<T>::iterator
+	ds::doubly<T>::end() { return iterator(nullptr); }
  
 	template<typename T>
-typename ds::doubly<T>::const_iterator ds::doubly<T>::end() const { return const_iterator(nullptr); }
+typename ds::doubly<T>::const_iterator
+	ds::doubly<T>::end() const { return const_iterator(nullptr); }
  
 	template<typename T>
-typename ds::doubly<T>::const_iterator ds::doubly<T>::cend() const { return const_iterator(nullptr); }
+typename ds::doubly<T>::const_iterator
+	ds::doubly<T>::cend() const { return const_iterator(nullptr); }
  
 	template<typename T>
-typename ds::doubly<T>::reverse_iterator ds::doubly<T>::rend() { return reverse_iterator(nullptr); }
+typename ds::doubly<T>::reverse_iterator
+	ds::doubly<T>::rend() { return reverse_iterator(nullptr); }
  
 	template<typename T>
-typename ds::doubly<T>::const_reverse_iterator ds::doubly<T>::rend() const { return const_reverse_iterator(nullptr); }
+typename ds::doubly<T>::const_reverse_iterator
+	ds::doubly<T>::rend() const { return const_reverse_iterator(nullptr); }
  
 	template<typename T>
-typename ds::doubly<T>::const_reverse_iterator ds::doubly<T>::crend() const { return const_reverse_iterator(nullptr); }
+typename ds::doubly<T>::const_reverse_iterator
+	ds::doubly<T>::crend() const { return const_reverse_iterator(nullptr); }
  
  
 	template<typename T>
@@ -392,3 +450,4 @@ template class doubly<long long>;
 template class doubly<long long float>;
 template class doubly<long long double>;
 template class doubly<std::string>;
+	

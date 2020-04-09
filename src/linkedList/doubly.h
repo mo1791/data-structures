@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <initializer_list>
 #include <iterator>
+#include <optional>
 
 namespace ds {
 
@@ -13,6 +14,7 @@ namespace ds {
 	private:
 		/* NODE CLASS */
 		class node;
+		std::size_t _size;
 		node* _head;
 		node* _tail;
 
@@ -20,7 +22,7 @@ namespace ds {
 		/* ITERATOR CLASS */
 		class _iterator {
 		public:
-			using iterator_category = std::bidirectional_iterator_tag;
+			using iterator_category = std::forward_iterator_tag;
 		
 		public:
 			explicit _iterator(node*);
@@ -46,7 +48,7 @@ namespace ds {
 		/* REVERSE_ITERATOR */
 		class _reverse_iterator {
 		public:
-			using iterator_category = std::bidirectional_iterator_tag;
+			using iterator_category = std::forward_iterator_tag;
 		
 		public:
 			explicit _reverse_iterator(node*);
@@ -93,8 +95,6 @@ namespace ds {
 
 		doubly<T>& operator=(std::initializer_list<T>);
  
-		bool empty() const;
- 
 		void push_front(const T);
  
 		void push_back(const T);	
@@ -111,6 +111,16 @@ namespace ds {
  
 		void pop_after(const T);
  
+		bool empty() const;
+		
+		size_type size() const;
+		
+		std::optional<const_reference> front() const;
+		
+		std::optional<const_reference> back() const;
+		
+		const_iterator data() const;
+
 		iterator begin();
  
 		const_iterator begin() const;
