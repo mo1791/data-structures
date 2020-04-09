@@ -39,13 +39,13 @@ T& ds::singly<T>::_iterator::operator*() {
 
 	template<typename T>
 bool ds::singly<T>::_iterator::operator!=(
-								ds::singly<T>::_iterator const& rhs) const {
+					ds::singly<T>::_iterator const& rhs) const {
 	return __iterator != rhs.__iterator;
 }
 
 	template<typename T>
 bool ds::singly<T>::_iterator::operator==(
-								ds::singly<T>::_iterator const& rhs) const {
+					ds::singly<T>::_iterator const& rhs) const {
 	return !(*this != rhs);
 }
 

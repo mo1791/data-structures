@@ -45,13 +45,13 @@ T& ds::doubly<T>::_iterator::operator*() {
  
 	template<typename T>
 bool ds::doubly<T>::_iterator::operator!=(
-									ds::doubly<T>::_iterator const& rhs) const {
+					ds::doubly<T>::_iterator const& rhs) const {
 	return __iterator != rhs.__iterator;
 }
  
 	template<typename T>
 bool ds::doubly<T>::_iterator::operator==(
-									ds::doubly<T>::_iterator const& rhs) const {
+					ds::doubly<T>::_iterator const& rhs) const {
 	return !(*this != rhs);
 }
  
@@ -79,13 +79,13 @@ T& ds::doubly<T>::_reverse_iterator::operator*() {
  
 	template<typename T>
 bool ds::doubly<T>::_reverse_iterator::operator!=(
-											ds::doubly<T>::_reverse_iterator const& rhs) const {
+					ds::doubly<T>::_reverse_iterator const& rhs) const {
 	return __iterator != rhs.__iterator;
 }
  
 	template<typename T>
 bool ds::doubly<T>::_reverse_iterator::operator==(
-											ds::doubly<T>::_reverse_iterator const& rhs) const {
+					ds::doubly<T>::_reverse_iterator const& rhs) const {
 	return !(*this != rhs);
 }
  
