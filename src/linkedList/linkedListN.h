@@ -103,6 +103,8 @@ class Iterator: public ForwardIterator<T> {
 
 public:
 	using ForwardIterator<T>::ForwardIterator;
+
+    //operator const Iterator() const { return node_; }
 };
 
 	template <typename T>
@@ -117,6 +119,8 @@ public:
 	T* operator->() { return &node_->data_; }
 
 	T const* operator->() const { return &node_->data_; }
+
+    //operator Iterator() const { return node_; }
 };
 	
 /* END FORWARDITERATOR CLASS */
@@ -187,7 +191,7 @@ public:
 	using size_type               = std::size_t;
 	using difference_type         = std::ptrdiff_t;
 	using iterator                = Iterator<T, std::conditional_t<std::is_class<T>::value, std::true_type, std::false_type>>;
-	using const_iterator          = iterator;
+	using const_iterator          = Iterator<const T, std::conditional_t<std::is_class<T>::value, std::true_type, std::false_type>>;
 	using reverse_iterator        = ReverseIterator<T, std::conditional_t<std::is_class<T>::value, std::true_type, std::false_type>>;
 	using const_reverse_iterator  = ReverseIterator<const T, std::conditional_t<std::is_class<T>::value, std::true_type, std::false_type>>;
 
@@ -296,6 +300,12 @@ public:
 
 /* END LINKEDLIST CLASS */
 
+template <typename T>
+std::ostream& operator<<(std::ostream& out, linkedList<T> const& ls) {
+    for ( auto value : ls)
+        out << value << ' ';
+    return out << '\n';
+}
 
 	template <typename T>
 linkedList<T>::linkedList()
