@@ -4,10 +4,10 @@
 ```
 Data Structures
 ├── Linked List Programs
-│   ├── DOUBLY.cc                  # doubly linked list 
-│   └── SINGLY.cc                  # singly linked list
+│   ├── linkedListN.h              # linkedList impl 
+│   └── linkedListS.h              # linked list impl (sentinel node)
 ├── Queue Programs
-│   └── QUEUE.cc                   # queue implementation
+│   └── QUEUE.h                    # queue impl
 ├── Stack Programs
-    └── STACK.cc                  	# stack implementation
+    └── STACK.h                    # stack impl
 ```
