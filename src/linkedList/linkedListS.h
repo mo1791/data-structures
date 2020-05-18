@@ -116,14 +116,14 @@ class ForwardIterator : public BaseIterator<T> {
   		using BaseIterator<T>::BaseIterator;
 
   		ForwardIterator& operator++() {
-    		node_ = node_->next_;
-    		return *this;
+            node_ = node_->next_;
+            return *this;
   		}
 
   		ForwardIterator operator++(int) {
-    		ForwardIterator tmp(node_);
-    		++(*this);
-    		return tmp;
+            ForwardIterator tmp(node_);
+            ++(*this);
+            return tmp;
   		}
 };
 
@@ -234,9 +234,11 @@ class linkedList final {
 
   		linkedList& operator=(linkedList);
 
-  		void push_front(const T);
+      template <typename U>
+  		void push_front(U&&);
 
-  		void push_back(const T);
+      template <typename U>
+  		void push_back(U&&);
 
   		void pop_front();
 
@@ -342,16 +344,18 @@ linkedList<T>& linkedList<T>::operator=(linkedList list) {
 
 //
 template <typename T>
-void linkedList<T>::push_front(const T data) {
+template <typename U>
+void linkedList<T>::push_front(U&& data) {
   	
-  	list_.push_front(new node<T>(data));
+  	list_.push_front(new node<T>(std::forward<U>(data)));
   	size_ = size_ + 1;
 }
 
 template <typename T>
-void linkedList<T>::push_back(const T data) {
+template <typename U>
+void linkedList<T>::push_back(U&& data) {
   	
-  	list_.push_back(new node<T>(data));
+  	list_.push_back(new node<T>(std::forward<U>(data)));
   	size_ = size_ + 1;
 }
 
