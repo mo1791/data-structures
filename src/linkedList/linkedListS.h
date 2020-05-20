@@ -260,7 +260,7 @@ public:
     swap(lhs.size_, rhs.size_);
   }
 
-  void print_frwrd() {
+  void print_forward() {
     iterator it = begin();
 
     while (it != end()) {
@@ -270,7 +270,7 @@ public:
     std::cout << '\n';
   }
 
-  void print_bkwrd() {
+  void print_backward() {
     reverse_iterator it = rbegin();
 
     while (it != rend()) {

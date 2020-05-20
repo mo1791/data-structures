@@ -1,182 +1,158 @@
 #pragma once
 
 #include <algorithm>
-#include <optional>
-#include <functional>
 #include <cassert>
-#include <iostream>
 #include <exception>
+#include <functional>
+#include <iostream>
+#include <optional>
 #include <string>
 
-template <typename T>
-class queue final {
-	
-	class node {
-		public:
-			explicit node(const T& value)
-				noexcept : data_(value), next_(nullptr) {}
+template <typename T> class queue final {
 
-			explicit node(T&& value)
-				noexcept : data_(std::move(value)), next_(nullptr) {}
+  class node {
+  public:
+    explicit node(const T &value) noexcept : data_(value), next_(nullptr) {}
 
-		private:
-			T data_;
-			node* next_;
-	};
-	
-public:
-	using value_type      = T;
-	using reference       = typename std::add_lvalue_reference<T>::type;
-	using pointer         = typename std::add_pointer<T>::type;
-	using const_reference = const reference;
-	using const_pointer   = const pointer;
-	using size_type       = std::size_t;
-	using difference_type = std::ptrdiff_t;
+    explicit node(T &&value) noexcept
+        : data_(std::move(value)), next_(nullptr) {}
 
+  private:
+    T data_;
+    node *next_;
+  };
 
 public:
-	queue();
+  using value_type = T;
+  using reference = typename std::add_lvalue_reference<T>::type;
+  using pointer = typename std::add_pointer<T>::type;
+  using const_reference = const reference;
+  using const_pointer = const pointer;
+  using size_type = std::size_t;
+  using difference_type = std::ptrdiff_t;
 
-	queue(queue<T> const&);
-	
-	queue(queue<T>&&);
-	
-	queue<T>& operator=(queue<T>);
-	
-	bool empty() const;
-	
-	template <typename U>
-	void push_back(U&&);
+public:
+  queue();
 
-	template <typename U>
-	void push(U&&);	
+  queue(queue<T> const &);
 
-	void pop_front();
+  queue(queue<T> &&);
 
-	std::optional<T> peek() const;
+  queue<T> &operator=(queue<T>);
 
-	void pop();
-	
-	void print() const;
-	
-	~queue();
+  bool empty() const;
 
-	friend void swap(queue<T>& lhs, queue<T>& rhs) {
-		using std::swap;
-		swap(lhs.head_, rhs.head_);
-		swap(lhs.tail_, rhs.tail_);
-	}
+  template <typename U> void push_back(U &&);
+
+  template <typename U> void push(U &&);
+
+  void pop_front();
+
+  std::optional<T> peek() const;
+
+  void pop();
+
+  void print() const;
+
+  ~queue();
+
+  friend void swap(queue<T> &lhs, queue<T> &rhs) {
+    using std::swap;
+    swap(lhs.head_, rhs.head_);
+    swap(lhs.tail_, rhs.tail_);
+  }
 
 private:
-	node* head_, *tail_;
+  node *head_, *tail_;
 };
 
-
-
-
 // start queue
-template <typename T>
-queue<T>::queue()
-: head_(nullptr), tail_(nullptr) {} 
+template <typename T> queue<T>::queue() : head_(nullptr), tail_(nullptr) {}
 
-template <typename T>
-queue<T>::queue(queue<T> const& outer) try: queue() { 
-	
-	node* _node = outer.head_;
+template <typename T> queue<T>::queue(queue<T> const &outer) try : queue() {
 
-	head_ = tail_ =  new node(_node->data_);
-	
-	_node = _node->next_;
+  node *_node = outer.head_;
 
-	while ( _node ) {
+  head_ = tail_ = new node(_node->data_);
 
-		push( _node->data_ );
+  _node = _node->next_;
 
-		_node = _node->next_;
-	}
+  while (_node) {
 
-} catch(std::bad_alloc const&) {
-	
-	std::cout << "Uncaught Exception 'std::bad_alloc' → alloc faild\xa"; 
+    push(_node->data_);
+
+    _node = _node->next_;
+  }
+
+} catch (std::bad_alloc const &) {
+
+  std::cout << "Uncaught Exception 'std::bad_alloc' → alloc faild\xa";
 }
 
-template <typename T>
-queue<T>::queue(queue<T>&& outer)
-	: queue() {
+template <typename T> queue<T>::queue(queue<T> &&outer) : queue() {
 
-	swap(*this, outer);
+  swap(*this, outer);
 }
 
-template <typename T>
-queue<T>& queue<T>::operator=(queue<T> rhs) {
-	
-	swap(*this, rhs);
-	return *this;
+template <typename T> queue<T> &queue<T>::operator=(queue<T> rhs) {
+
+  swap(*this, rhs);
+  return *this;
 }
 
-template <typename T>
-bool queue<T>::empty() const { return head_ == nullptr; }
-
+template <typename T> bool queue<T>::empty() const { return head_ == nullptr; }
 
 template <typename T>
 template <typename U>
-void queue<T>::push_back(T&& value) try {
-	
-	node* _node = new node(std::forward<U>(value));
+void queue<T>::push_back(U &&value) try {
 
-	if ( empty() ) {
-		head_ = tail_ = _node; return;
-	}
+  node *_node = new node(std::forward<U>(value));
 
-	tail_->next_ = _node;
-	tail_ = _node;
-	
-} catch(std::bad_alloc const&) {
-	
-	std::cout << "Uncaught Exception 'std::bad_alloc' → alloc faild\xa";
+  if (empty()) {
+    head_ = tail_ = _node;
+    return;
+  }
+
+  tail_->next_ = _node;
+  tail_ = _node;
+
+} catch (std::bad_alloc const &) {
+
+  std::cout << "Uncaught Exception 'std::bad_alloc' → alloc faild\xa";
 }
 
-template <typename T>
-template <typename U>
-void queue<T>::push(U&&value) { push_back( std::forward<U>(value) ); }
-
-
-template <typename T>
-void queue<T>::pop_front() {
-
-	assert( !empty() );
-
-	node* curr = head_;
-	head_ = head_->next_;
-	curr =  ( free(curr), nullptr );
+template <typename T> template <typename U> void queue<T>::push(U &&value) {
+  push_back(std::forward<U>(value));
 }
 
-template <typename T>
-void queue<T>::pop() { pop_front(); }
+template <typename T> void queue<T>::pop_front() {
 
+  assert(!empty());
 
-template <typename T>
-std::optional<T> queue<T>::peek() const { 
-
-	if ( !empty() ) {
-		return head_->data_; 
-	}
-	 return std::nullopt;
+  node *curr = head_;
+  head_ = head_->next_;
+  curr = (free(curr), nullptr);
 }
 
+template <typename T> void queue<T>::pop() { pop_front(); }
 
-template <typename T>
-void queue<T>::print() const {
+template <typename T> std::optional<T> queue<T>::peek() const {
 
-	for(node* it=head_; it; it=it->next_)
-		std::cout << it->data_ << ' ';
-	std::cout << '\n';
+  if (!empty()) {
+    return head_->data_;
+  }
+  return std::nullopt;
 }
 
+template <typename T> void queue<T>::print() const {
 
-template <typename T>
-queue<T>::~queue() {
+  for (node *it = head_; it; it = it->next_)
+    std::cout << it->data_ << ' ';
+  std::cout << '\n';
+}
 
-	while ( !empty() )
-		pop();
+template <typename T> queue<T>::~queue() {
+
+  while (!empty())
+    pop();
 }

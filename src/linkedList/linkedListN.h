@@ -22,26 +22,26 @@ template <typename T> concept IsClass = std::is_class<T>::value;
 
 template <typename T, typename U>
 concept NonSelf = !std::is_same<typename std::decay<T>::type, U>::value &&
-                  !std::is_base_of<U, typename std::decay<T>::type>::value;
+!std::is_base_of<U, typename std::decay<T>::type>::value;
 
 /* END CONSTRAINTS */
 
 /* START NODE CLASS */
 template <typename T> class Node {
 
-  friend class linkedList<T>;
-  friend class BaseIterator<T>;
-  friend class BaseReverseIterator<T>;
-  friend class ForwardIterator<T>;
-  friend class BackwardIterator<T>;
+friend class linkedList<T>;
+friend class BaseIterator<T>;
+friend class BaseReverseIterator<T>;
+friend class ForwardIterator<T>;
+friend class BackwardIterator<T>;
 
 public:
   explicit Node(const T &value, Node *next = nullptr,
-                Node *prev = nullptr) noexcept
-      : data_(value), next_(next), prev_(prev) {}
+    Node *prev = nullptr) noexcept
+  : data_(value), next_(next), prev_(prev) {}
 
   explicit Node(T &&value, Node *next = nullptr, Node *prev = nullptr) noexcept
-      : data_(std::move(value)), next_(next), prev_(prev) {}
+  : data_(std::move(value)), next_(next), prev_(prev) {}
 
 private:
   T data_;
@@ -88,14 +88,14 @@ public:
 
     node_ = node_->next_;
     return *this;
-  }
+}
 
-  ForwardIterator operator++(int) {
+ForwardIterator operator++(int) {
 
     ForwardIterator tmp(node_);
     ++(*this);
     return tmp;
-  }
+}
 };
 
 template <typename T> class Iterator : public ForwardIterator<T> {
@@ -134,13 +134,13 @@ public:
   BackwardIterator &operator++() {
     node_ = node_->prev_;
     return *this;
-  }
+}
 
-  BackwardIterator operator++(int) {
+BackwardIterator operator++(int) {
     BackwardIterator tmp(node_);
     ++(*this);
     return tmp;
-  }
+}
 };
 
 template <typename T> class ReverseIterator : public BackwardIterator<T> {
@@ -168,7 +168,7 @@ public:
 
 template <typename T> class linkedList final {
 
-  using node = Node<T>;
+using node = Node<T>;
 
 private:
   /* NODE CLASS */
@@ -252,38 +252,38 @@ public:
 
   void print_forward() const {
 
-    auto it = rbegin();
-
-    while (it != rend()) {
-
-      std::cout << *it << ' ';
-      ++it;
-    }
-
-    std::cout << '\n';
-  }
-
-  void print_backward() const {
-
     auto it = begin();
 
     while (it != end()) {
 
       std::cout << *it << ' ';
       ++it;
-    }
-    std::cout << '\n';
   }
 
-  ~linkedList();
+  std::cout << '\n';
+}
 
-  friend void swap(linkedList<T> &lhs, linkedList<T> &rhs) {
+void print_backward() const {
+
+    auto it = rbegin();
+
+    while (it != rend()) {
+
+      std::cout << *it << ' ';
+      ++it;
+  }
+  std::cout << '\n';
+}
+
+~linkedList();
+
+friend void swap(linkedList<T> &lhs, linkedList<T> &rhs) {
 
     using std::swap;
     swap(lhs.size_, rhs.size_);
     swap(lhs.head_, rhs.head_);
     swap(lhs.tail_, rhs.tail_);
-  }
+}
 };
 
 /* END LINKEDLIST CLASS */
@@ -292,7 +292,7 @@ template <typename T>
 std::ostream &operator<<(std::ostream &out, linkedList<T> const &ls) {
   for (auto value : ls)
     out << value << ' ';
-  return out << '\n';
+return out << '\n';
 }
 
 template <typename T>
@@ -324,7 +324,7 @@ linkedList<T> &linkedList<T>::operator=(linkedList<T> rhs) {
 }
 
 template <typename T> bool linkedList<T>::empty() const {
-  return head_ == nullptr;
+return head_ == nullptr;
 }
 
 template <typename T>
@@ -333,11 +333,11 @@ typename linkedList<T>::size_type linkedList<T>::size() const {
 }
 
 template <typename T> std::optional<T> linkedList<T>::front() const {
-  return !empty() ? *begin() : std::nullopt;
+return !empty() ? *begin() : std::nullopt;
 }
 
 template <typename T> std::optional<T> linkedList<T>::back() const {
-  return !empty() ? *rbegin() : std::nullopt;
+return !empty() ? *rbegin() : std::nullopt;
 }
 
 template <typename T>
@@ -357,12 +357,12 @@ void linkedList<T>::push_front(U &&value) try {
 
     size_ = size_ + 1;
     return;
-  }
+}
 
-  head_->prev_ = _node;
-  head_ = _node;
+head_->prev_ = _node;
+head_ = _node;
 
-  size_ = size_ + 1;
+size_ = size_ + 1;
 
 } catch (std::bad_alloc const &) {
 
@@ -381,12 +381,12 @@ void linkedList<T>::push_back(U &&value) try {
 
     size_ = size_ + 1;
     return;
-  }
+}
 
-  tail_->next_ = _node;
-  tail_ = _node;
+tail_->next_ = _node;
+tail_ = _node;
 
-  size_ = size_ + 1;
+size_ = size_ + 1;
 
 } catch (std::bad_alloc const &) {
 
@@ -404,18 +404,18 @@ void linkedList<T>::push_after(const U &key, U &&value) {
   while (curr) {
     if (curr->data_ == key)
       break;
-    curr = curr->next_;
-  }
+  curr = curr->next_;
+}
 
-  if (curr == nullptr)
+if (curr == nullptr)
     return;
 
-  if (curr == tail_) {
+if (curr == tail_) {
     push_back(std::forward<U>(value));
     return;
-  }
+}
 
-  try {
+try {
 
     node *_node = new node(std::forward<U>(value), curr->next_, curr);
 
@@ -424,10 +424,10 @@ void linkedList<T>::push_after(const U &key, U &&value) {
 
     size_ = size_ + 1;
 
-  } catch (std::bad_alloc const &) {
+} catch (std::bad_alloc const &) {
 
     std::cout << "bfr, Uncaught Exception 'std::bad_alloc' → ALLOC FAILD\xa";
-  }
+}
 }
 
 template <typename T>
@@ -439,124 +439,124 @@ void linkedList<T>::push_before(const U &key, U &&value) {
   if (head_->data_ == key) {
     push_front(std::forward<U>(value));
     return;
-  }
+}
 
-  try {
+try {
 
     node *curr = head_->next_;
 
     while (curr) {
       if (curr->data_ == key)
         break;
-      curr = curr->next_;
-    }
+    curr = curr->next_;
+}
 
-    if (curr == nullptr)
-      return;
+if (curr == nullptr)
+  return;
 
-    node *_node = new node(std::forward<U>(value), curr, curr->prev_);
+node *_node = new node(std::forward<U>(value), curr, curr->prev_);
 
-    curr->prev_->next_ = _node;
-    curr->prev_ = _node;
+curr->prev_->next_ = _node;
+curr->prev_ = _node;
 
-    size_ = size_ + 1;
+size_ = size_ + 1;
 
-  } catch (std::bad_alloc const &) {
+} catch (std::bad_alloc const &) {
 
     std::cout << "bfr, Uncaught Exception 'std::bad_alloc' → ALLOC FAILD\xa";
-  }
+}
 }
 
 template <typename T> void linkedList<T>::pop_front() {
 
-  assert(!empty());
+assert(!empty());
 
-  node *curr = head_;
-  head_ = head_->next_;
+node *curr = head_;
+head_ = head_->next_;
 
-  if (head_)
+if (head_)
     head_->prev_ = nullptr;
 
-  curr = (free(curr), nullptr);
+curr = (free(curr), nullptr);
 
-  size_ = size_ - 1;
+size_ = size_ - 1;
 }
 
 template <typename T> void linkedList<T>::pop_back() {
 
-  assert(!empty());
+assert(!empty());
 
-  node *curr = tail_;
-  tail_ = tail_->prev_;
-  tail_->next_ = nullptr;
+node *curr = tail_;
+tail_ = tail_->prev_;
+tail_->next_ = nullptr;
 
-  curr = (free(curr), nullptr);
+curr = (free(curr), nullptr);
 
-  size_ = size_ - 1;
+size_ = size_ - 1;
 }
 
 template <typename T> void linkedList<T>::pop_before(const T &key) {
 
-  assert(!empty());
+assert(!empty());
 
-  node *curr = head_;
+node *curr = head_;
 
-  for (node *next = head_->next_; next;) {
+for (node *next = head_->next_; next;) {
     if (next->data_ == key)
       break;
-    curr = next;
-    next = next->next_;
-  }
+  curr = next;
+  next = next->next_;
+}
 
-  if (curr == tail_)
+if (curr == tail_)
     return;
 
-  if (curr == head_) {
+if (curr == head_) {
     pop_front();
     return;
-  }
+}
 
-  curr->prev_->next_ = curr->next_;
-  curr->next_->prev_ = curr->prev_;
+curr->prev_->next_ = curr->next_;
+curr->next_->prev_ = curr->prev_;
 
-  curr = (free(curr), nullptr);
+curr = (free(curr), nullptr);
 
-  size_ = size_ - 1;
+size_ = size_ - 1;
 }
 
 template <typename T> void linkedList<T>::pop_after(const T &key) {
 
-  assert(!empty());
+assert(!empty());
 
-  node *curr = head_;
-  node *next = head_->next_;
+node *curr = head_;
+node *next = head_->next_;
 
-  while (next) {
+while (next) {
 
     if (curr->data_ == key)
       break;
-    curr = next;
-    next = next->next_;
-  }
+  curr = next;
+  next = next->next_;
+}
 
-  if (curr == tail_)
+if (curr == tail_)
     return;
 
-  if (next == tail_) {
+if (next == tail_) {
     pop_back();
     return;
-  }
+}
 
-  curr->next_ = next->next_;
-  next->next_->prev_ = curr;
+curr->next_ = next->next_;
+next->next_->prev_ = curr;
 
-  next = (free(next), nullptr);
+next = (free(next), nullptr);
 
-  size_ = size_ - 1;
+size_ = size_ - 1;
 }
 
 template <typename T> typename linkedList<T>::iterator linkedList<T>::begin() {
-  return head_;
+return head_;
 }
 
 template <typename T>
@@ -585,7 +585,7 @@ typename linkedList<T>::const_reverse_iterator linkedList<T>::crbegin() const {
 }
 
 template <typename T> typename linkedList<T>::iterator linkedList<T>::end() {
-  return nullptr;
+return nullptr;
 }
 
 template <typename T>
@@ -615,6 +615,6 @@ typename linkedList<T>::const_reverse_iterator linkedList<T>::crend() const {
 
 template <typename T> linkedList<T>::~linkedList() {
 
-  while (!empty())
+while (!empty())
     pop_front();
 }
