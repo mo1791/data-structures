@@ -44,7 +44,7 @@ public:
 
     stack<T>& operator=(stack<T>);
 
-    bool empty() const;
+    [[nodiscard]] bool empty() const;
 
     template <typename U>
     void push_front(U&&);
@@ -117,7 +117,7 @@ stack<T>& stack<T>::operator=(stack<T> rhs)
 }
 
 template <typename T>
-bool stack<T>::empty() const { return head_ == nullptr; }
+[[nodiscard]] bool stack<T>::empty() const { return head_ == nullptr; }
 
 template <typename T>
 template <typename U>
