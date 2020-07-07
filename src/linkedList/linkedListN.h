@@ -18,16 +18,16 @@ class BaseIterator;
 template <typename>
 class BaseReverseIterator;
 template <typename>
-class ForwardIterator;
+class Iterator;
 template <typename>
-class BackwardIterator;
+class ReverseIterator;
 
 /* START CONSTRAINTS */
 template <typename T>
-concept IsClass = std::is_class<T>::value;
+concept bool IsClass = std::is_class<T>::value;
 
 template <typename T, typename U>
-concept NonSelf = !std::is_same<typename std::decay<T>::type, U>::value && !std::is_base_of<U, typename std::decay<T>::type>::value;
+concept bool NonSelf = !std::is_same<typename std::decay<T>::type, U>::value && !std::is_base_of<U, typename std::decay<T>::type>::value;
 
 /* END CONSTRAINTS */
 
@@ -35,11 +35,18 @@ concept NonSelf = !std::is_same<typename std::decay<T>::type, U>::value && !std:
 template <typename T>
 class Node {
     friend class linkedList<T>;
-    friend class BaseIterator<T>;
-    friend class BaseReverseIterator<T>;
-    friend class ForwardIterator<T>;
-    friend class BackwardIterator<T>;
-
+    friend class BaseIterator<Node<T>>;
+    friend class BaseIterator<const Node<T>>;
+    friend class BaseReverseIterator<Node<T>>;
+    friend class BaseReverseIterator<const Node<T>>;
+    friend class Iterator<Node<T>>;
+    friend class Iterator<const Node<T>>;
+    friend class ReverseIterator<Node<T>>;
+    friend class ReverseIterator<const Node<T>>;
+public:
+    using value_type = T;
+    using reference  = typename std::add_lvalue_reference<T>::type;
+    using pointer    = typename std::add_pointer<T>::type;
 public:
     explicit Node(const T& value,
         Node* next = nullptr,
@@ -56,7 +63,10 @@ public:
         , prev_(prev)
     {
     }
-
+    
+    T& operator*() { return data_; }
+    T const& operator*() const { return data_; }
+    
 private:
     T data_;
     Node* next_;
@@ -72,14 +82,18 @@ private:
 template <typename T>
 class BaseIterator {
 public:
-    BaseIterator(Node<T>* _node)
+    BaseIterator(T* _node)
         : node_(_node)
     {
     }
 
-    T& operator*() { return node_->data_; }
+    decltype(auto) operator*() { return **node_; }
 
-    T const& operator*() const { return node_->data_; }
+    decltype(auto) operator*() const { return **node_; }
+    
+    typename T::pointer operator->() { return &**node_; }
+
+    typename T::pointer operator->() const { return &**node_; }
 
     bool operator==(BaseIterator rhs) const { return rhs.node_ == node_; }
 
@@ -88,98 +102,57 @@ public:
     // operator BaseIterator() const { return node_; }
 
 protected:
-    Node<T>* node_;
+    T* node_;
 };
 
 /* END BASEITERATOR CLASS */
 
 /* START FORWARDITERATOR CLASS */
 template <typename T>
-class ForwardIterator : public BaseIterator<T> {
+class Iterator : public BaseIterator<T> {
 protected:
     using BaseIterator<T>::node_;
 
 public:
     using BaseIterator<T>::BaseIterator;
 
-    ForwardIterator& operator++()
+    Iterator& operator++()
     {
         node_ = node_->next_;
         return *this;
     }
 
-    ForwardIterator operator++(int)
+    Iterator operator++(int)
     {
-        ForwardIterator tmp(node_);
+        Iterator tmp(node_);
         ++(*this);
         return tmp;
     }
 };
 
-template <typename T>
-class Iterator : public ForwardIterator<T> {
-public:
-    using ForwardIterator<T>::ForwardIterator;
-
-    // operator const Iterator() const { return node_; }
-};
-
-template <IsClass T>
-class Iterator<T> : public ForwardIterator<T> {
-protected:
-    using ForwardIterator<T>::node_;
-
-public:
-    using ForwardIterator<T>::ForwardIterator;
-
-    T* operator->() { return &node_->data_; }
-
-    T const* operator->() const { return &node_->data_; }
-
-    // operator Iterator() const { return node_; }
-};
 
 /* END FORWARDITERATOR CLASS */
 
 template <typename T>
-class BackwardIterator : public BaseIterator<T> {
+class ReverseIterator : public BaseIterator<T> {
 protected:
     using BaseIterator<T>::node_;
 
 public:
     using BaseIterator<T>::BaseIterator;
 
-    BackwardIterator& operator++()
+    ReverseIterator& operator++()
     {
         node_ = node_->prev_;
         return *this;
     }
 
-    BackwardIterator operator++(int)
+    ReverseIterator operator++(int)
     {
-        BackwardIterator tmp(node_);
+        ReverseIterator tmp(node_);
         ++(*this);
         return tmp;
     }
-};
-
-template <typename T>
-class ReverseIterator : public BackwardIterator<T> {
-public:
-    using BackwardIterator<T>::BackwardIterator;
-};
-
-template <IsClass T>
-class ReverseIterator<T> : public BackwardIterator<T> {
-protected:
-    using BackwardIterator<T>::node_;
-
-public:
-    using BackwardIterator<T>::BackwardIterator;
-
-    T* operator->() { return &node_->data_; }
-
-    T const* operator->() const { return &node_->data_; }
 };
 
 /* END ITERATOR CLASSES */
@@ -204,10 +177,10 @@ public:
     using const_pointer = const pointer;
     using size_type = std::size_t;
     using difference_type = std::ptrdiff_t;
-    using iterator = Iterator<T>;
-    using const_iterator = Iterator<const T>;
-    using reverse_iterator = ReverseIterator<T>;
-    using const_reverse_iterator = ReverseIterator<const T>;
+    using iterator = Iterator<node>;
+    using const_iterator = Iterator<const node>;
+    using reverse_iterator = ReverseIterator<node>;
+    using const_reverse_iterator = ReverseIterator<const node>;
 
 public:
     linkedList();
@@ -252,25 +225,25 @@ public:
 
     iterator begin();
 
-    const_iterator begin() const;
+    iterator begin() const;
 
     const_iterator cbegin() const;
 
     reverse_iterator rbegin();
 
-    const_reverse_iterator rbegin() const;
+    reverse_iterator rbegin() const;
 
     const_reverse_iterator crbegin() const;
 
     iterator end();
 
-    const_iterator end() const;
+    iterator end() const;
 
     const_iterator cend() const;
 
     reverse_iterator rend();
 
-    const_reverse_iterator rend() const;
+    reverse_iterator rend() const;
 
     const_reverse_iterator crend() const;
 
@@ -318,6 +291,7 @@ operator<<(std::ostream& out, linkedList<T> const& ls)
         out << value << ' ';
     return out << '\n';
 }
+
 
 template <typename T>
 linkedList<T>::linkedList()
@@ -606,7 +580,7 @@ linkedList<T>::begin()
 }
 
 template <typename T>
-typename linkedList<T>::const_iterator
+typename linkedList<T>::iterator
 linkedList<T>::begin() const
 {
     return head_;
@@ -627,7 +601,7 @@ linkedList<T>::rbegin()
 }
 
 template <typename T>
-typename linkedList<T>::const_reverse_iterator
+typename linkedList<T>::reverse_iterator
 linkedList<T>::rbegin() const
 {
     return tail_;
@@ -648,7 +622,7 @@ linkedList<T>::end()
 }
 
 template <typename T>
-typename linkedList<T>::const_iterator
+typename linkedList<T>::iterator
 linkedList<T>::end() const
 {
     return nullptr;
@@ -669,7 +643,7 @@ linkedList<T>::rend()
 }
 
 template <typename T>
-typename linkedList<T>::const_reverse_iterator
+typename linkedList<T>::reverse_iterator
 linkedList<T>::rend() const
 {
     return nullptr;
