@@ -43,10 +43,12 @@ class Node {
     friend class Iterator<const Node<T>>;
     friend class ReverseIterator<Node<T>>;
     friend class ReverseIterator<const Node<T>>;
+    
 public:
     using value_type = T;
     using reference  = typename std::add_lvalue_reference<T>::type;
     using pointer    = typename std::add_pointer<T>::type;
+    
 public:
     explicit Node(const T& value,
         Node* next = nullptr,
@@ -170,17 +172,17 @@ private:
     node* tail_;
 
 public:
-    using value_type = T;
-    using reference = typename std::add_lvalue_reference<T>::type;
-    using pointer = typename std::add_pointer<T>::type;
-    using const_reference = const reference;
-    using const_pointer = const pointer;
-    using size_type = std::size_t;
-    using difference_type = std::ptrdiff_t;
-    using iterator = Iterator<node>;
-    using const_iterator = Iterator<const node>;
-    using reverse_iterator = ReverseIterator<node>;
-    using const_reverse_iterator = ReverseIterator<const node>;
+    using value_type              = T;
+    using reference               = typename std::add_lvalue_reference<T>::type;
+    using pointer                 = typename std::add_pointer<T>::type;
+    using const_reference         = const reference;
+    using const_pointer           = const pointer;
+    using size_type               = std::size_t;
+    using difference_type         = std::ptrdiff_t;
+    using iterator                = Iterator<node>;
+    using const_iterator          = Iterator<const node>;
+    using reverse_iterator        = ReverseIterator<node>;
+    using const_reverse_iterator  = ReverseIterator<const node>;
 
 public:
     linkedList();
