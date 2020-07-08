@@ -38,10 +38,12 @@ class node {
     friend class ReverseIterator<const node<T>>;
 
 public:
-    using value_type    = T;
-    using reference     = typename std::add_lvalue_reference<T>::type;
-    using pointer       = typename std::add_pointer<T>::type;
-
+    using value_type      = T;
+    using reference       = typename std::add_lvalue_reference<T>::type;
+    using const_reference = typename std::add_const<T>::type&;
+    using pointer         = typename std::add_pointer<T>::type;
+    using const_pointer   = typename std::add_const<T>::type*;
+    
 protected:
     void push_front(node* _node) noexcept
     {
@@ -86,7 +88,15 @@ public:
         , next_(this)
     {
     }
-
+    
+    friend void swap(node& lhs, node& rhs) {
+        using std::swap;
+        swap(lhs.data_, rhs.data_);
+        swap(lhs.prev_, rhs.prev_);
+        swap(lhs.next_, rhs.next_);
+    }
+    
+    
     T& operator*() { return data_; }
     
     T const& operator*() const { return data_; }
@@ -187,8 +197,8 @@ public:
     using value_type              = T;
     using reference               = typename std::add_lvalue_reference<T>::type;
     using pointer                 = typename std::add_pointer<T>::type;
-    using const_reference         = const reference;
-    using const_pointer           = const pointer;
+    using const_reference         = typename std::add_const<T>::type&;
+    using const_pointer           = typename std::add_const<T>::type*;
     using size_type               = std::size_t;
     using difference_type         = std::ptrdiff_t;
     using iterator                = Iterator<node<T>>;
@@ -229,25 +239,25 @@ public:
 
     iterator begin();
 
-    const_iterator begin() const;
+    iterator begin() const;
 
     const_iterator cbegin() const;
 
     iterator end();
 
-    const_iterator end() const;
+    iterator end() const;
 
     const_iterator cend() const;
 
     reverse_iterator rbegin();
 
-    const_reverse_iterator rbegin() const;
+    reverse_iterator rbegin() const;
 
     const_reverse_iterator crbegin() const;
 
     reverse_iterator rend();
 
-    const_reverse_iterator rend() const;
+    reverse_iterator rend() const;
 
     const_reverse_iterator crend() const;
 
@@ -258,22 +268,22 @@ public:
         swap(lhs.size_, rhs.size_);
     }
 
-    void print_forward()
+    void print_forward() const
     {
-        auto it = begin();
+        auto it = cbegin();
 
-        while (it != end()) {
+        while (it != cend()) {
             std::cout << *it << ' ';
             ++it;
         }
         std::cout << '\n';
     }
 
-    void print_backward()
+    void print_backward() const
     {
-        auto it = rbegin();
+        auto it = crbegin();
 
-        while (it != rend()) {
+        while (it != crend()) {
             std::cout << *it << ' ';
             ++it;
         }
@@ -293,14 +303,14 @@ template <typename T>
 linkedList<T>::linkedList(std::initializer_list<T> lst)
 {
     for (auto value : lst)
-        push_back(value);
+        push_back(std::move(value));
 }
 
 template <typename T>
 linkedList<T>::linkedList(linkedList const& outer)
 {
     for (auto value : outer)
-        push_back(value);
+        push_back(std::move(value));
 }
 
 template <typename T>
@@ -388,7 +398,7 @@ std::optional<T> linkedList<T>::back() const
 template <typename T>
 typename linkedList<T>::const_iterator linkedList<T>::data() const
 {
-    return begin();
+    return cbegin();
 }
 
 template <typename T>
@@ -398,7 +408,7 @@ typename linkedList<T>::iterator linkedList<T>::begin()
 }
 
 template <typename T>
-typename linkedList<T>::const_iterator linkedList<T>::begin() const
+typename linkedList<T>::iterator linkedList<T>::begin() const
 {
     return list_.next_;
 }
@@ -416,7 +426,7 @@ typename linkedList<T>::iterator linkedList<T>::end()
 }
 
 template <typename T>
-typename linkedList<T>::const_iterator linkedList<T>::end() const
+typename linkedList<T>::iterator linkedList<T>::end() const
 {
     return &list_;
 }
@@ -434,7 +444,7 @@ typename linkedList<T>::reverse_iterator linkedList<T>::rbegin()
 }
 
 template <typename T>
-typename linkedList<T>::const_reverse_iterator linkedList<T>::rbegin() const
+typename linkedList<T>::reverse_iterator linkedList<T>::rbegin() const
 {
     return list_.prev_;
 }
@@ -452,7 +462,7 @@ typename linkedList<T>::reverse_iterator linkedList<T>::rend()
 }
 
 template <typename T>
-typename linkedList<T>::const_reverse_iterator linkedList<T>::rend() const
+typename linkedList<T>::reverse_iterator linkedList<T>::rend() const
 {
     return &list_;
 }
