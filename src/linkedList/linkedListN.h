@@ -45,9 +45,11 @@ class Node {
     friend class ReverseIterator<const Node<T>>;
     
 public:
-    using value_type = T;
-    using reference  = typename std::add_lvalue_reference<T>::type;
-    using pointer    = typename std::add_pointer<T>::type;
+    using value_type       = T;
+    using reference        = typename std::add_lvalue_reference<T>::type;
+    using const_reference  = typename std::add_const<T>::type&;
+    using pointer          = typename std::add_pointer<T>::type;
+    using const_pointer    = typename std::add_const<T>::type*;
     
 public:
     explicit Node(const T& value,
@@ -93,9 +95,9 @@ public:
 
     decltype(auto) operator*() const { return **node_; }
     
-    typename T::pointer operator->() { return &**node_; }
+    decltype(auto) operator->() { return &**node_; }
 
-    typename T::pointer operator->() const { return &**node_; }
+    decltype(auto) operator->() const { return &**node_; }
 
     bool operator==(BaseIterator rhs) const { return rhs.node_ == node_; }
 
@@ -175,8 +177,8 @@ public:
     using value_type              = T;
     using reference               = typename std::add_lvalue_reference<T>::type;
     using pointer                 = typename std::add_pointer<T>::type;
-    using const_reference         = const reference;
-    using const_pointer           = const pointer;
+    using const_reference         = typename std::add_const<T>::type&;
+    using const_pointer           = typename std::add_const<T>::type*;
     using size_type               = std::size_t;
     using difference_type         = std::ptrdiff_t;
     using iterator                = Iterator<node>;
@@ -251,9 +253,9 @@ public:
 
     void print_forward() const
     {
-        auto it = begin();
+        auto it = cbegin();
 
-        while (it != end()) {
+        while (it != cend()) {
             std::cout << *it << ' ';
             ++it;
         }
@@ -263,9 +265,9 @@ public:
 
     void print_backward() const
     {
-        auto it = rbegin();
+        auto it = crbegin();
 
-        while (it != rend()) {
+        while (it != crend()) {
             std::cout << *it << ' ';
             ++it;
         }
@@ -366,7 +368,7 @@ template <typename T>
 typename linkedList<T>::const_iterator
 linkedList<T>::data() const
 {
-    return begin();
+    return cbegin();
 }
 
 template <typename T>
